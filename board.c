@@ -7,8 +7,9 @@ void system_init(void)
 	writel(0xA5A5A500, SWTCSRA);
 }
 
-void board_early_init_f(void)
+void clock_init(void)
 {
+	// CPG register configuration block
 	u32 val;
 
 	/* TMU0 */
@@ -543,58 +544,15 @@ void board_init(void)
 {
 	system_init();
 	
-	board_early_init_f();
+	clock_init();
 	
 	pio_pin_mux();
 
 	lbsc_init();
 
 	ddr_init();
-}
 
-void* memcpy(void* pvTo, const void* pvFrom, size_t size)
-{
-	unsigned char* pbTo = (unsigned char*)pvTo;
-	unsigned char* pbFrom = (unsigned char*)pvFrom;
-	while(size-- > 0)
-	{
-		*pbTo++ = *pbFrom++;
-	}
-	return pvTo;
-}
-
-#define UBOOTADDR                0x80000
-#define SDRAMADDR                0xe6304000
-#define READLEN                  128
-int main(void)
-{
-	char *p = NULL;
-	char buf[READLEN];
-	u32 addr = UBOOTADDR;
-	p = (char *)SDRAMADDR;
-	int j, ret;
-	
-	board_init();
+	// device init
 	uart_init();
-	uart_puts("\nMINIBOOT VER--0.1\n");
-
 	spi_init();
-	
-	for(j=0; j<(1024*200/READLEN); j++){
-		ret = spi_flash_cmd_read_quad(addr, READLEN, buf);
-		
-		if(ret){
-			uart_puts("Read Uboot Failed\n");
-			return -1;
-		}
-
-		memcpy(p, buf, READLEN);
-		p += READLEN;
-		addr += READLEN;
-	}
-	uart_puts("Read Uboot OK\n");
-	(*((void(*)(void))SDRAMADDR))();
-	
-	while(1);
-	return 0;
 }

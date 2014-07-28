@@ -7,17 +7,17 @@ SECTIONS
 	. = 0xE6300000;
 
 	. = ALIGN(4);
-	.text : 
-	{
-	start.o (.text*)
-	*(.text)
+	.text : {
+	 __image_start = .;
+	 start.o (.text*)
+	 *(.text*)
 	}
 
 	. = ALIGN(4);
-	.data : { *(.data) }
+	.data : {*(.data*)}
 		
 	. = ALIGN(4);
 	__bss_start = .;
-	.bss : { *(.bss) }
+	.bss : { *(.bss*) }
 	__bss_end = .;
 }

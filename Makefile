@@ -11,16 +11,10 @@ miniboot.bin: miniboot.elf
 	$(COPY) -O binary $< $@
 	$(DUMP) -D $< > dump.log
 	
-miniboot.elf: start.S board.c uart.c spiflash.c
-	$(CC) -c -mcpu=cortex-a15 -mlittle-endian -msoft-float -Wall -Os -nostdlib start.S
-	$(CC) -c -mcpu=cortex-a15 -mlittle-endian -msoft-float -Wall -Os -nostdlib board.c
-	$(CC) -c -mcpu=cortex-a15 -mlittle-endian -msoft-float -Wall -Os -nostdlib uart.c
-	$(CC) -c -mcpu=cortex-a15 -mlittle-endian -msoft-float -Wall -Os -nostdlib spiflash.c
-	$(LD) -T miniboot.lds -o $@ start.o board.o uart.o spiflash.o
-
-#secure.elf: *.S *.c
-#	$(CC) -c -mcpu=cortex-a9 -mlittle-endian -msoft-float -Wall -Os -nostdlib $^
-#	$(LD) -T secure.lds -o $@ monitor.o secure_startup.o secure_main.o board.o
+miniboot.elf: *.S *.c
+	$(CC) -c -mcpu=cortex-a15 -mlittle-endian -msoft-float -Wall -Os -nostdlib $^
+	$(LD) -T miniboot.lds -o $@ *.o
+#	$(LD) -T miniboot.lds -Bstatic -Ttext 0xE6300000 -o $@ *.o
 	
 clean:
 	$(RM) *.o *.i *.bin

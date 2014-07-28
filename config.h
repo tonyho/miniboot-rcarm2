@@ -1,3 +1,5 @@
+#include "global_cfg.h"
+
 typedef unsigned int 	u32;
 typedef unsigned short 	u16;
 typedef unsigned char 	u8;
@@ -12,6 +14,15 @@ typedef unsigned int 	size_t;
 #define readl(a)		(*(volatile u32 *)(a))
 #define readw(a)		(*(volatile u16 *)(a))
 #define readb(a)		(*(volatile u8 *)(a))
+
+//Function declare=======================================================================
+void board_init(void);
+
+void uart_init(void);
+void print(const char *s);
+
+void spi_init(void);
+int spi_flash_cmd_read_quad(u32 offset,size_t len, void *data);
 
 //REG ADDR===============================================================================
 #define	RWDT_BASE				0xE6020000
@@ -193,8 +204,6 @@ typedef unsigned int 	size_t;
 #define	GPSR4					0xE6060014
 #define	IPSR14					0xE6060058
 //UART INC=============================================================================== 
-void uart_init(void);
-void uart_puts(const char *s);
 /*
  * Copy and modify from linux/drivers/serial/sh-sci.h
  */
@@ -386,11 +395,7 @@ SCIF_FNS(SCLSR,                         0,  0, 0x24, 16)
 
 
 //SPI FLASH INC===============================================================================
-void spi_init(void);
-int spi_flash_cmd_read_quad(u32 offset,size_t len, void *data);
-
-#define CONFIG_SH_QSPI_BASE	0xE6B10000
-
+#define CONFIG_SH_QSPI_BASE			0xE6B10000
 #define SPI_FLASH_PROG_TIMEOUT		(2 * 1000)
 
 struct sh_qspi_regs {
@@ -414,10 +419,10 @@ struct sh_qspi_regs {
 	unsigned char spbfcr;
 	unsigned char dummy1;
 	unsigned short spbdcr;
-	unsigned long spbmul0;
-	unsigned long spbmul1;
-	unsigned long spbmul2;
-	unsigned long spbmul3;
+	unsigned int spbmul0;
+	unsigned int spbmul1;
+	unsigned int spbmul2;
+	unsigned int spbmul3;
 };
 #define SH_QSPI_SPRFF	0x80
 #define SH_QSPI_SPTEF	0x20

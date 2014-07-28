@@ -1,0 +1,5 @@
+#define CONFIG_SYS_INIT_SP_ADDR		0xE633F000	// stack address for miniboot
+
+#define CONFIG_UBOOT_SPI_OFFSET    	0x80000
+#define CONFIG_UBOOT_RUN_ADDR		0xe6304000
+#define CONFIG_SPIREAD_BUF_LENGTH  	1024

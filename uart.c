@@ -10,12 +10,6 @@ static struct uart_port sh_sci = {
 	.type		= SCIF_BASE_PORT,
 };
 
-static void delay(int n)
-{
-	u32 i;
-	for( i=0; i<n; i++ );
-}
-
 void uart_init(void)
 {
 	sci_out(&sh_sci, SCSCR , 0x01);
@@ -28,12 +22,9 @@ void uart_init(void)
 	sci_out(&sh_sci, SCSCR , 0x01);
 	
 	sci_out(&sh_sci, SCBRR, 0x34);
-	//udelay((1000000 * 2 * 16 / CONFIG_SYS_CLK_FREQ) * 1000 + 1);
-	delay(100000);
+
 	sci_out(&sh_sci, DL,    0x8D);
-	sci_out(&sh_sci, CKS,   0x4000);
-	//udelay((1000000 * 2 * 16 / CONFIG_SYS_CLK_FREQ) * 1000 + 1);
-	delay(100000);	
+	sci_out(&sh_sci, CKS,   0x4000);	
 	
 	sci_out(&sh_sci, SCFCR, 0);
 	sci_out(&sh_sci, SCSCR , SCSCR_INIT(&sh_sci));
@@ -60,7 +51,7 @@ void uart_putc(const char c)
 	serial_raw_putc(c);
 }
 
-void uart_puts(const char *s)
+void print(const char *s)
 {
 	while (*s) {
 		uart_putc(*s++);

@@ -87,7 +87,7 @@ int sh_qspi_xfer_quad(
 
 	/* data transfer */
 	if (dout != NULL && din != NULL)
-		uart_puts("sh_qspi_xfer_qread: " \
+		print("sh_qspi_xfer_qread: " \
 		       "full duplex is no supported\n");
 
 	if (dout != NULL) {
@@ -133,12 +133,12 @@ int spi_xfer_quad(
 	}
 
 	if (cmdlen % 8) {
-		uart_puts("spi_xfer_quad: cmdlen is not 8bit alined\n");
+		print("spi_xfer_quad: cmdlen is not 8bit alined\n");
 		return 1;
 	}
 
 	if (datalen % 8) {
-		uart_puts("spi_xfer_quad: datalen is not 8bit alined\n");
+		print("spi_xfer_quad: datalen is not 8bit alined\n");
 		return 1;
 	}
 
@@ -213,7 +213,7 @@ int spi_xfer(
 	}
 
 	if (bitlen % 8) {
-		uart_puts("spi_xfer: bitlen is not 8bit alined");
+		print("spi_xfer: bitlen is not 8bit alined");
 		return 1;
 	}
 
@@ -252,11 +252,11 @@ int spi_flash_read_write(
 
 	ret = spi_xfer(cmd_len * 8, cmd, NULL, flags);
 	if (ret) {
-		uart_puts("SF: Failed to send command\n");
+		print("SF: Failed to send command\n");
 	} else if (data_len != 0) {
 		ret = spi_xfer(data_len * 8, data_out, data_in, SPI_XFER_END);
 		if (ret)
-			uart_puts("SF: Failed to transfer\n");
+			print("SF: Failed to transfer\n");
 	}
 
 	return ret;
@@ -280,7 +280,7 @@ int spi_flash_cmd_poll_bit(unsigned long timeout,
 
 	ret = spi_xfer(8, &cmd, NULL, SPI_XFER_BEGIN);
 	if (ret) {
-		uart_puts("SF: Failed to send command \n");
+		print("SF: Failed to send command \n");
 		return ret;
 	}
 	
@@ -300,7 +300,7 @@ int spi_flash_cmd_poll_bit(unsigned long timeout,
 		return 0;
 
 	/* Timed out */
-	uart_puts("SF: time out!\n");
+	print("SF: time out!\n");
 	return -1;
 }
 
@@ -308,23 +308,25 @@ int spi_flash_cmd_write_status_config(u8 *srcr)
 {
 	u8 cmd;
 	int ret;
+	size_t cmd_len = 1;
+	size_t data_len = 2;
 
 	ret = spi_flash_cmd(CMD_WRITE_ENABLE, NULL, 0);
 	if (ret < 0) {
-		uart_puts("SF: enabling write failed\n");
+		print("SF: enabling write failed\n");
 		return ret;
 	}
 
 	cmd = CMD_WRITE_STATUS;
-	ret = spi_flash_read_write(cmd, 1, srcr, NULL, 2);
+	ret = spi_flash_read_write(&cmd, cmd_len, srcr, NULL, data_len);
 	if (ret) {
-		uart_puts("SF: fail to write status and config register\n");
+		print("SF: fail to write status and config register\n");
 		return ret;
 	}
 	
 	ret = spi_flash_cmd_poll_bit(SPI_FLASH_PROG_TIMEOUT, CMD_READ_STATUS, STATUS_WIP);
 	if (ret < 0) {
-		uart_puts("SF: write status register timed out\n");
+		print("SF: write status register timed out\n");
 		return ret;
 	}
 
@@ -356,7 +358,7 @@ void spi_init(void)
 	/* Read the ID codes */
 	ret = spi_flash_cmd(CMD_READ_ID, idcode, sizeof(idcode));
 	if (ret)
-		uart_puts("spi read id failed\n");
+		print("spi read id failed\n");
 		
 	/* enable quad transfer */
 	spi_flash_cmd(CMD_READ_STATUS, &sr, 1);
@@ -365,7 +367,7 @@ void spi_init(void)
 	srcr[0] = sr;
 	srcr[1] = cr;
 	if (spi_flash_cmd_write_status_config(srcr) < 0)
-		uart_puts("spi_flash_cmd_write_status_config failed\n");
+		print("spi_flash_cmd_write_status_config failed\n");
 }
 
 static void spi_flash_addr4(u32 addr, u8 *cmd)
@@ -376,7 +378,7 @@ static void spi_flash_addr4(u32 addr, u8 *cmd)
 	cmd[3] = addr >> 8;
 	cmd[4] = addr >> 0;
 }
-int spi_flash_read_common(const u8 *cmd,
+int spi_flash_read_common(u8 *cmd,
 		size_t cmd_len, void *data, size_t data_len)
 {
 	int ret;
