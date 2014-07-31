@@ -13,7 +13,7 @@ miniboot.bin: miniboot.elf
 	
 miniboot.elf: *.S *.c
 	$(CC) -c -mcpu=cortex-a15 -mlittle-endian -msoft-float -Wall -Os -nostdlib $^
-	$(LD) -T miniboot.lds -o $@ *.o
+	$(LD) -T miniboot.lds -o $@ *.o libgcc.a -static
 #	$(LD) -T miniboot.lds -Bstatic -Ttext 0xE6300000 -o $@ *.o
 	
 clean:

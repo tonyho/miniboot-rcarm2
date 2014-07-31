@@ -6,6 +6,7 @@ typedef unsigned char 	u8;
 typedef unsigned int 	size_t;
 
 #define NULL ((void *)0)
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 #define writel(v,a)		(*(volatile u32 *)(a) = (v))
 #define writew(v,a)		(*(volatile u16 *)(a) = (v))

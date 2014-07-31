@@ -309,7 +309,7 @@ void pio_pin_mux(void)
 
 void lbsc_init(void)
 {
-	u32 cnt = 0x186a0;
+	//u32 cnt = 0x186a0;
 	
 	writel( 0x00000020 , 0xFEC00200);
 	writel( 0x00000020 , 0xFEC00204);
@@ -329,7 +329,7 @@ void lbsc_init(void)
 	writel( 0x00000000 , 0xFEC002C8);
 	writel( 0x00000000 , 0xFEC00380);
 
-	while(cnt--);
+	//while(cnt--);
 }
 
 void ddr_init(void)
@@ -551,8 +551,4 @@ void board_init(void)
 	lbsc_init();
 
 	ddr_init();
-
-	// device init
-	uart_init();
-	spi_init();
 }
